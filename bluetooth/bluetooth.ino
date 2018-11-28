@@ -1,7 +1,13 @@
 #include <SoftwareSerial.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 //SoftwareSerial Bluetooth(0, 1); // RX, TX
 //int LED = LED_BUILTIN; // the on-board LED
 //char data = 0; // the data received
+
+#define SDA_PIN 4
+#define SCL_PIN 5
+LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 const int PROBABILITY = 850;
 const int LEVEL_LENGTH = 400;
@@ -16,11 +22,16 @@ char nothing = ' ';
 int pos = 0;
 
 void setup() {
-  //  Bluetooth.begin(9600);
-  //  Bluetooth.println("Send 1 to turn on the LED. Send 0 to turn Off");
-  //  pinMode(LED, OUTPUT);
+  lcd.begin(16,2);
+  lcd.home();
+  lcd.print("Hello, ARDUINO ");  
+  lcd.setCursor ( 0, 1 );
+  lcd.print ("     WORLD!  ");
+
+  
   Serial.begin(9600);
   randomise();
+  lcd.clear();
 }
 
 void printLine(char* lvl, int start, int line) {
@@ -29,6 +40,19 @@ void printLine(char* lvl, int start, int line) {
     Serial.print(lvl[i + start]);
   }
   Serial.print('\n');
+  lcd.setCursor(0, 0);
+  lcd.print(nothing);
+  lcd.setCursor(0, 1);
+  lcd.print(nothing);
+  lcd.setCursor(0, playerPos);
+  lcd.print(player);
+  if (start == 0) return;
+  for(int i = 0; i < 16; i++) {
+    if(lvl[i + start] != lvl[i + start - 1]) {
+      lcd.setCursor(i, line);
+      lcd.print(lvl[i + start]);
+    }
+  }
 }
 
 void randomise() {
@@ -46,15 +70,21 @@ void randomise() {
 }
 
 void checkGame() {
-//  if (level[playerPos][pos] == car) {
-//    Serial.println("CRASHED");
-//    isGameOver = true;
-//  }
+  if (level[playerPos][pos] == car) {
+    Serial.println("CRASHED");
+    lcd.home();
+    lcd.clear();
+    lcd.print("CRASHED");  
+    isGameOver = true;
+  }
 }
 
 void loop() {
   if (isGameOver) {
     Serial.println("gameover");
+    lcd.home();
+    lcd.clear();
+    lcd.print("GAME OVER");  
   } else {
     if (Serial.available() > 0) {
       char move = Serial.read();
@@ -63,7 +93,6 @@ void loop() {
       else if (move == '0')
         playerPos = 1;
     }
-    checkGame();
     if (pos < LEVEL_LENGTH - 17) {
       Serial.println("****************");
       printLine(level[0], pos, 0);
@@ -72,6 +101,7 @@ void loop() {
     } else {
       Serial.println("you win");
     }
+    checkGame();
     pos++;
   }
 
