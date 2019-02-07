@@ -1,9 +1,6 @@
 #include <SoftwareSerial.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-//SoftwareSerial Bluetooth(0, 1); // RX, TX
-//int LED = LED_BUILTIN; // the on-board LED
-//char data = 0; // the data received
 
 #define SDA_PIN 4
 #define SCL_PIN 5
@@ -24,11 +21,10 @@ int pos = 0;
 void setup() {
   lcd.begin(16,2);
   lcd.home();
-  lcd.print("Hello, ARDUINO ");  
+  lcd.print("Hello, ARDUINO ");
   lcd.setCursor ( 0, 1 );
   lcd.print ("     WORLD!  ");
 
-  
   Serial.begin(9600);
   randomise();
   lcd.clear();
@@ -74,7 +70,7 @@ void checkGame() {
     Serial.println("CRASHED");
     lcd.home();
     lcd.clear();
-    lcd.print("CRASHED");  
+    lcd.print("CRASHED");
     isGameOver = true;
   }
 }
@@ -84,7 +80,7 @@ void loop() {
     Serial.println("gameover");
     lcd.home();
     lcd.clear();
-    lcd.print("GAME OVER");  
+    lcd.print("GAME OVER");
   } else {
     if (Serial.available() > 0) {
       char move = Serial.read();

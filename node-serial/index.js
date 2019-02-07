@@ -1,7 +1,6 @@
 const SerialPort = require('serialport')
 const port = new SerialPort('/dev/tty.HCrn-DevB')
 
-
 function send(char) {
   port.write(char, function (err) {
     if (err) {
@@ -20,7 +19,6 @@ var keypress = require('keypress')
 keypress(process.stdin);
 
 process.stdin.on('keypress', function (ch, key) {
-  console.log(key);
   if (key && key.ctrl && key.name == 'c') {
     process.stdin.pause();
   }
